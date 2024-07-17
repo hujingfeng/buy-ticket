@@ -1,18 +1,12 @@
 {
     "date": [
-        14
+        19
     ],
     "sess": [
-        1,
-        2
+        1
     ],
     "price": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
+        3,2,1
     ],
     "real_name": [
         1
@@ -20,11 +14,11 @@
     "nick_name": "",
     "ticket_num": 1,
     "viewer_person": [
-        2
+        1
     ],
-    "driver_path": "C:\\Users\\19209\\Documents\\GitHub\\damaihelper\\chromedriver.exe",
+    "driver_path": "C:\\Users\\hujingfeng\\Downloads\\chromedriver-win64\\chromedriver.exe",
     "damai_url": "https://www.damai.cn/",
-    "target_url": "https://m.damai.cn/damai/detail/item.html?itemId=714001339730",
+    "target_url": "https://m.damai.cn/damai/detail/item.html?utm=&itemId=815070218529",
     "comment": {
         "title": "comment 下的所有内容为自定义注释,无实际含义",
         "date": "1",
@@ -39,7 +33,7 @@
         "target_url": "购票的实际地址,需要使用手机端的地址,域名: https://m.damai.cn/ 开头",
         "queue": {
             "title": "列入待抢的链接地址",
-            "zhoujielun_0403": "https://m.damai.cn/damai/detail/item.html?itemId=717235298514"
+            "xusong_0719": "https://m.damai.cn/damai/detail/item.html?utm=&itemId=815070218529"
         }
     }
 }

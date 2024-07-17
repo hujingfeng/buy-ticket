@@ -16,6 +16,8 @@
     "viewer_person": [
         1
     ],
+    "auto_buy_time":"2024-07-17 13:20:00",
+    "auto_buy": true,
     "driver_path": "C:\\Users\\hujingfeng\\Downloads\\chromedriver-win64\\chromedriver.exe",
     "damai_url": "https://www.damai.cn/",
     "target_url": "https://m.damai.cn/damai/detail/item.html?utm=&itemId=815070218529",
@@ -31,6 +33,8 @@
         "driver_path": "驱动地址",
         "damai_url": "大麦首页地址,用于登录",
         "target_url": "购票的实际地址,需要使用手机端的地址,域名: https://m.damai.cn/ 开头",
+        "auto_buy_time":"格式为%Y-%m-%d %H:%M:%S,例如2023-04-01 10:00:00",
+        "auto_buy": "true为开启自动抢票，false为关闭自动抢票",
         "queue": {
             "title": "列入待抢的链接地址",
             "xusong_0719": "https://m.damai.cn/damai/detail/item.html?utm=&itemId=815070218529"

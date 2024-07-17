@@ -10,10 +10,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
+import argparse
+import json
+import logging
+from datetime import datetime
 
 class Concert(object):
-    def __init__(self, date, session, price, real_name, nick_name, ticket_num, viewer_person, damai_url, target_url, driver_path):
+    def __init__(self, date, session, price, real_name, nick_name, ticket_num, viewer_person, damai_url, target_url, driver_path,is_auto,auto_buy_time):
         self.date = date  # 日期序号
         self.session = session  # 场次序号优先级
         self.price = price  # 票价序号优先级
@@ -29,6 +32,8 @@ class Concert(object):
         self.target_url = target_url  # 目标购票网址
         self.driver_path = driver_path  # 浏览器驱动地址
         self.driver = None
+        self.isauto=is_auto
+        self.auto_buy_time=auto_buy_time
 
     def isClassPresent(self, item, name, ret=False):
         try:
@@ -133,7 +138,7 @@ class Concert(object):
         while self.driver.title.find('订单确认') == -1:
             self.num += 1  # 尝试次数加1
 
-            if con.driver.current_url.find("buy.damai.cn") != -1:
+            if self.driver.current_url.find("buy.damai.cn") != -1:
                 break
 
             # 确认页面刷新成功
@@ -347,8 +352,19 @@ class Concert(object):
             print(u'###成功提交订单,请手动支付###')
             self.time_end = time()
 
-
-if __name__ == '__main__':
+logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
+def load_config(config_path):
+    """Load configuration from a JSON file."""
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        logging.error(f'配置文件未找到: {config_path}')
+        exit(1)
+    except json.JSONDecodeError:
+        logging.error(f'配置文件格式错误: {config_path}')
+        exit(1)
+'''if __name__ == '__main__':
     try:
         with open('./config.json', 'r', encoding='utf-8') as f:
             config = loads(f.read())
@@ -373,3 +389,47 @@ if __name__ == '__main__':
             print(u"###经过%d轮奋斗，共耗时%.1f秒，抢票成功！请确认订单信息###" %
                   (con.num, round(con.time_end-con.time_start, 3)))
             break
+'''
+
+
+def main(config_paths):
+    for config_path in config_paths:
+        config = load_config(config_path)
+        con = Concert(config['date'], config['sess'], config['price'], config['real_name'],
+                      config['nick_name'], config['ticket_num'], config['viewer_person'],
+                      config['damai_url'], config['target_url'], config['driver_path'],config['auto_buy'],config['auto_buy_time'])
+        ##新增自动抢票功能
+        if config['auto_buy']:
+            scheduled_time=datetime.strptime(config['auto_buy_time'], "%Y-%m-%d %H:%M:%S")
+            now=datetime.now()
+            wait_time=(scheduled_time-now).total_seconds()
+            if wait_time>0:
+                logging.info(f'当前时间: {now}, 自动抢票时间: {scheduled_time}, 剩余时间: {wait_time}秒, 等待中...')
+                sleep(wait_time)
+
+        try:
+            con.enter_concert()  # 进入到具体抢购页面
+            while True:
+                try:
+                    con.choose_ticket()
+                    con.check_order()
+                except Exception as e:
+                    logging.error(f'抢票过程中出现错误: {e}')
+                    con.driver.get(con.target_url)
+                    sleep(5)  # 等待5秒，避免被视为机器人
+                    continue
+
+                if con.status == 6:
+                    logging.info(
+                        f"### 经过{con.num}轮奋斗，共耗时{round(con.time_end - con.time_start, 3)}秒，抢票成功！请确认订单信息 ###")
+                    break
+        except Exception as e:
+            logging.error(f'未知错误: {e}')
+            exit(1)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Script to run concert ticket bot.')
+    parser.add_argument('--config', action='append', required=True, help='Path to the configuration file')
+    args = parser.parse_args()
+
+    main(args.config)
